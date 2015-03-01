@@ -128,7 +128,10 @@ class ControllerManager:
         rospy.Service('%s/meta/stop_controller' % manager_namespace, StopController, self.stop_controller)
         rospy.Service('%s/meta/restart_controller' % manager_namespace, RestartController, self.restart_controller)
         
-        self.diagnostics_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
+        # queue_size to 1 since only the latest message is meaningfull
+        # hence we can drop older ones
+        self.diagnostics_pub = rospy.Publisher('/diagnostics', DiagnosticArray,
+                                              queue_size=1)
         if self.diagnostics_rate > 0: Thread(target=self.diagnostics_processor).start()
 
     def on_shutdown(self):
